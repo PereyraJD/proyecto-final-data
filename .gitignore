@@ -1,0 +1,11 @@
+# Entorno virtual de Python
+.venv/
+venv/
+__pycache__/
+
+# Archivos de dataset grandes
+data/
+*.csv
+
+# Archivos de sistema
+.DS_Store

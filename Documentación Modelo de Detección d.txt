@@ -1,0 +1,59 @@
+ Documentación: Modelo de Detección de Fraude en Transacciones
+Resumen del Proyecto
+Este proyecto tiene como objetivo desarrollar un modelo de Machine Learning capaz de detectar transacciones financieras fraudulentas en tiempo real. Utilizando un dataset de transacciones sintéticas, se realiza un análisis exploratorio, ingeniería de características y se entrenan y evalúan dos modelos de clasificación para identificar el de mejor rendimiento.
+
+1. Carga y Exploración Inicial de Datos (EDA)
+Fuente de Datos: Se utilizó el dataset transactions.csv, que contiene un registro de transacciones financieras.
+
+Inspección Inicial: Se confirmó que el dataset no contenía valores nulos, lo que simplificó la fase de limpieza. Las estadísticas descriptivas (df.describe()) mostraron una gran variación en los montos (amount), con valores atípicos significativos.
+
+Análisis Visual Clave:
+
+Fraude por Tipo de Transacción: El análisis gráfico reveló un hallazgo crucial: el fraude ocurre exclusivamente en transacciones de tipo TRANSFER y CASH_OUT. Esto permite enfocar el análisis y la ingeniería de características en estos dos tipos.
+
+Montos de Transacción: Mediante un boxplot, se observó que, aunque hay superposición, las transacciones fraudulentas tienden a involucrar montos más altos.
+
+2. Ingeniería y Preprocesamiento de Características
+Para mejorar la capacidad predictiva del modelo, se crearon tres características nuevas basadas en el conocimiento del dominio:
+
+esTipoRelevante: Una variable binaria (1 o 0) que indica si la transacción es TRANSFER o CASH_OUT. Esto captura directamente el hallazgo principal del EDA.
+
+intentoVaciado: Una variable binaria que se activa (1) si el monto de la transacción es exactamente igual al saldo original de la cuenta (oldbalanceOrg). Este es un patrón de comportamiento típico en actividades fraudulentas donde se intenta vaciar una cuenta por completo.
+
+errorBalanceOrig: Calcula la discrepancia entre el balance esperado después de la transacción y el balance real (oldbalanceOrg + amount - newbalanceOrig). Un valor diferente de cero en esta columna puede indicar anomalías en el registro de la transacción, que son más comunes en casos de fraude.
+
+Preprocesamiento:
+
+One-Hot Encoding: La variable categórica type fue convertida a formato numérico usando One-Hot Encoding. Esto permite que el modelo matemático utilice la información del tipo de transacción sin asumir un orden o jerarquía entre ellos.
+
+3. Entrenamiento y Evaluación de Modelos
+División de Datos: El dataset se dividió en un 80% para entrenamiento y un 20% para prueba. Se utilizó stratify=y para asegurar que la proporción de casos de fraude fuera la misma en ambos conjuntos, lo cual es fundamental en datasets desbalanceados.
+
+Modelo 1: Árbol de Decisión (DecisionTreeClassifier)
+
+Configuración: Se usó class_weight='balanced' para penalizar más los errores en la clase minoritaria (fraude) y max_depth=10 para evitar el sobreajuste.
+
+Resultado: El modelo mostró un buen Recall de 0.90 para la clase "Fraude", indicando que detectó al 90% de los fraudes reales. El AUC fue de 0.94, un resultado sólido.
+
+Modelo 2: Random Forest (RandomForestClassifier)
+
+Configuración: Se usó un bosque de 100 árboles (n_estimators=100) y class_weight='balanced'.
+
+Resultado: Este modelo superó al Árbol de Decisión, con un Recall para "Fraude" de 0.90 y una Precisión de 0.99. El AUC fue de 0.95, confirmando su superioridad. La matriz de confusión mostró una cantidad muy baja de falsos negativos (fraudes no detectados), que es el error más costoso en este problema.
+
+Conclusión del Modelado: Se seleccionó el modelo Random Forest como el modelo final debido a su mayor precisión y robustez general.
+
+4. Análisis de Importancia de Características
+El modelo Random Forest permitió extraer qué características fueron las más influyentes para tomar sus decisiones. El top 5 de características más importantes fueron:
+
+errorBalanceOrig: La discrepancia en el balance fue el predictor más fuerte.
+
+oldbalanceOrg: El saldo original de la cuenta.
+
+newbalanceDest: El nuevo saldo del destinatario.
+
+amount: El monto de la transacción.
+
+intentoVaciado: Nuestra característica creada para detectar el vaciado de cuentas.
+
+Este análisis confirma que tanto los datos originales como las nuevas características de ingeniería fueron cruciales para el éxito del modelo.
