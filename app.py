@@ -44,6 +44,27 @@ st.markdown("""
     /* Clases de color para los deltas */
     .delta-red { color: #d9534f; }
     .delta-green { color: #5cb85c; }
+            
+    /* Contenedor de la cuadrícula de KPIs */
+    .kpi-grid-container {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr); /* 4 columnas en pantallas grandes */
+        gap: 20px;
+    }
+
+    /* Media Query para tablets */
+    @media (max-width: 992px) {
+        .kpi-grid-container {
+            grid-template-columns: repeat(2, 1fr); /* 2 columnas */
+        }
+    }
+
+    /* Media Query para móviles */
+    @media (max-width: 576px) {
+        .kpi-grid-container {
+            grid-template-columns: 1fr; /* 1 columna */
+        }
+    }            
 </style>
 """, unsafe_allow_html=True)
 
@@ -102,15 +123,26 @@ if page == "Resumen Ejecutivo":
     total_amount_fraud = df[df['isFraud'] == 1]['amount'].sum()
     fraud_rate = (total_fraud / total_transactions) * 100
 
-    kpi1, kpi2, kpi3, kpi4 = st.columns(4)
-    with kpi1:
-        st.markdown(f'<div class="kpi-card"><h3>Total Transacciones</h3><h2>{total_transactions:,}</h2></div>', unsafe_allow_html=True)
-    with kpi2:
-        st.markdown(f'<div class="kpi-card" style="border-left: 5px solid #d9534f;"><h3>Fraudes Detectados</h3><h2>{total_fraud:,}</h2></div>', unsafe_allow_html=True)
-    with kpi3:
-        st.markdown(f'<div class="kpi-card"><h3>Monto en Riesgo</h3><h2>${total_amount_fraud:,.0f}</h2></div>', unsafe_allow_html=True)
-    with kpi4:
-        st.markdown(f'<div class="kpi-card" style="border-left: 5px solid #5cb85c;"><h3>Tasa de Fraude</h3><h2>{fraud_rate:.3f}%</h2></div>', unsafe_allow_html=True)
+    st.markdown(f"""
+    <div class="kpi-grid-container">
+        <div class="kpi-card">
+            <h3>Total Transacciones</h3>
+            <h2>{total_transactions:,}</h2>
+        </div>
+        <div class="kpi-card" style="border-left: 5px solid #d9534f;">
+            <h3>Fraudes Detectados</h3>
+            <h2>{total_fraud:,}</h2>
+        </div>
+        <div class="kpi-card">
+            <h3>Monto en Riesgo</h3>
+            <h2>${total_amount_fraud:,.0f}</h2>
+        </div>
+        <div class="kpi-card" style="border-left: 5px solid #5cb85c;">
+            <h3>Tasa de Fraude</h3>
+            <h2>{fraud_rate:.3f}%</h2>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
     st.markdown("---")
@@ -253,10 +285,23 @@ elif page == "Detector de Fraude":
     st.markdown("Ingrese los datos de una transacción para evaluarla con el modelo de IA.")
     st.write("Información relevante: la casilla 'step' representa la hora del día en la que se realizó la transacción formato 0-23 ejemplo 791 % 24 = 23. El mismo es un formato utilizado para el entendimiento a la hora del aprendizaje del modelo.")
 
+    time_input_method = st.radio(
+        "Seleccione el método de entrada de tiempo:",
+        ("Step (Absoluto)", "Hora del Día (0-23)"),
+        horizontal=True
+        )
+
     with st.form("prediction_form"):
         c1, c2, c3 = st.columns(3)
         with c1:
-            step = st.number_input("Paso (Step)", min_value=1, step=1, value=1)
+            # Entrada de tiempo condicional
+            if time_input_method == "Step (Absoluto)":
+                step = st.number_input("Paso (Step)", min_value=1, step=1, value=1)
+            else:
+                hour = st.slider("Hora del Día", 0, 23, 10)
+                # El modelo espera un 'step', podemos usar la hora como un proxy
+                step = hour 
+            
             amount = st.number_input("Monto (Amount)", min_value=0.0, format="%.2f", value=1000.0)
         with c2:
             type_trans = st.selectbox("Tipo de Transacción", options=df['type'].unique())
