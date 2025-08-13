@@ -1,4 +1,4 @@
- Documentación: Modelo de Detección de Fraude en Transacciones
+Documentación: Modelo de Detección de Fraude en Transacciones
 Resumen del Proyecto
 Este proyecto tiene como objetivo desarrollar un modelo de Machine Learning capaz de detectar transacciones financieras fraudulentas en tiempo real. Utilizando un dataset de transacciones sintéticas, se realiza un análisis exploratorio, ingeniería de características y se entrenan y evalúan dos modelos de clasificación para identificar el de mejor rendimiento.
 

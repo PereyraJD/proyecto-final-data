@@ -247,11 +247,12 @@ elif page == "Análisis Interactivo":
     st.plotly_chart(fig_time_scatter, use_container_width=True)
 
 
-# --- PÁGINA: DETECTOR EN VIVO ---
+# --- PÁGINA: DETECTOR DE FRAUDE ---
 elif page == "Detector de Fraude":
     st.title("Detector de Fraude Manual")
     st.markdown("Ingrese los datos de una transacción para evaluarla con el modelo de IA.")
-    
+    st.write("Información relevante: la casilla 'step' representa la hora del día en la que se realizó la transacción formato 0-23 ejemplo 791 % 24 = 23.")
+
     with st.form("prediction_form"):
         c1, c2, c3 = st.columns(3)
         with c1:
