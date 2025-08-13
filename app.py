@@ -251,7 +251,7 @@ elif page == "Análisis Interactivo":
 elif page == "Detector de Fraude":
     st.title("Detector de Fraude Manual")
     st.markdown("Ingrese los datos de una transacción para evaluarla con el modelo de IA.")
-    st.write("Información relevante: la casilla 'step' representa la hora del día en la que se realizó la transacción formato 0-23 ejemplo 791 % 24 = 23. El mismo es un formato utilizado para el entendimiento del modelo.")
+    st.write("Información relevante: la casilla 'step' representa la hora del día en la que se realizó la transacción formato 0-23 ejemplo 791 % 24 = 23. El mismo es un formato utilizado para el entendimiento a la hora del aprendizaje del modelo.")
 
     with st.form("prediction_form"):
         c1, c2, c3 = st.columns(3)
